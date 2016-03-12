@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="PollSystemModelStoreContainer" CdmEntityContainer="PollSystemEntities">
+    <EntitySetMapping Name="Polls">
+      <EntityTypeMapping TypeName="PollSystemModel.Poll">
+        <MappingFragment StoreEntitySet="Poll">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PollQuesAnswers">
+      <EntityTypeMapping TypeName="PollSystemModel.PollQuesAnswer">
+        <MappingFragment StoreEntitySet="PollQuesAnswers">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="QuestionId" ColumnName="QuestionId" />
+          <ScalarProperty Name="AnswerText" ColumnName="AnswerText" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PollQuestions">
+      <EntityTypeMapping TypeName="PollSystemModel.PollQuestion">
+        <MappingFragment StoreEntitySet="PollQuestions">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="PollId" ColumnName="PollId" />
+          <ScalarProperty Name="Question" ColumnName="Question" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UserPolls">
+      <EntityTypeMapping TypeName="PollSystemModel.UserPoll">
+        <MappingFragment StoreEntitySet="UserPoll">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="PollId" ColumnName="PollId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UserRoles">
+      <EntityTypeMapping TypeName="PollSystemModel.UserRole">
+        <MappingFragment StoreEntitySet="UserRoles">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Role" ColumnName="Role" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Users">
+      <EntityTypeMapping TypeName="PollSystemModel.User">
+        <MappingFragment StoreEntitySet="Users">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UserAnswers">
+      <EntityTypeMapping TypeName="PollSystemModel.UserAnswer">
+        <MappingFragment StoreEntitySet="UserAnswers">
+          <ScalarProperty Name="AnswerId" ColumnName="AnswerId" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

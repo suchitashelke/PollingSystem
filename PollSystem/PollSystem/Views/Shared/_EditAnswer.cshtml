@@ -1,0 +1,75 @@
+﻿<script type="text/javascript">
+
+    $(function () {
+
+        var buttonClicked;
+
+        $("#errorOption").click(function () {
+            $(this).hide().html("");
+            $(".Option").focus();
+        });
+
+        $("#Option").blur(function () {
+            if (buttonClicked != undefined && $("#Option").val().trim() == "")
+            {
+                $('#errorOption').show().html("Please enter option.");
+                return false;
+            }
+        });
+
+        $('#btnSubmit').unbind('click').click(function () {
+            buttonClicked = $(this).attr('id');
+            $("#errorOption").hide().html("");
+            $('#lblError').hide().html("");
+
+            if ($("#Option").val().trim() == "") {
+                $('#errorOption').show().html("Please enter option.");
+                return false;
+            }
+        });
+    });
+
+    function OnSuccess(response) {
+        if (!response) {
+            $('#lblError').show().html("Error occurred while updating answer. Please try again later.");
+            return false;
+        }
+
+        $("#pollGrid").trigger("reloadGrid");
+        $('#modal-container').modal('hide');
+    }
+    function OnFailure(response) {
+        $('#lblError').show().html("Error occurred while updating answer. Please try again later.");
+        return false;
+    }
+    function OnBegin() {
+        $("#loading").show();
+    }
+    function OnComplete() {
+        $("#loading").hide();
+    }
+</script>
+
+<div class="modal-body">
+    <div class="popup-body">
+        @using (Ajax.BeginForm("UpdateAnswer", "Manage", new AjaxOptions { OnBegin = "OnBegin", OnSuccess = "OnSuccess", OnFailure = "OnFailure", OnComplete = "OnComplete" }))
+        {
+            <div class="login-info" style="padding-top:1em">
+                <div class="popup-form">
+                    <h2>Edit Answer</h2>
+                    <div style="padding-top: 10px; height: 40px;">
+                        <label id="lblError" class="error" style="display:none"></label>
+                    </div>
+                    <div style="height:63px">
+                        @Html.TextBox("Option", null, new { @class = "Option user", placeholder = "Option", maxlength = 2000, value = ViewBag.Option })
+                        <span id="errorOption" class="popup-validator" style="display:none"></span>
+                    </div>
+                </div>
+                <input type="hidden" id="QuestionId" name="QuestionId" value="@ViewBag.QuestionId" />
+                <input type="hidden" id="AnswerId" name="AnswerId" value="@ViewBag.AnswerId" />
+                <input type="submit" id="btnSubmit" name="Submit" value="Submit" />
+                <input type="submit" id="btnCancel" name="Cancel" value="Cancel" data-dismiss="modal" />
+            </div>
+        }
+    </div>
+</div>

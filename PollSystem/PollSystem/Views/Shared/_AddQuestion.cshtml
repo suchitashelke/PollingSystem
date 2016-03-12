@@ -1,0 +1,113 @@
+﻿
+<script type="text/javascript">
+
+    $(function () {
+
+        var buttonClicked;
+
+        $("[id^=error]").click(function () {
+            $(this).hide().html("");
+            var id = $(this).attr('id').replace("error", "");
+            $("." + id).focus();
+        });
+
+        $("input[type=text]").blur(function () {
+            if (buttonClicked != undefined)
+                validate($(this).attr('id'));
+
+            if ($("#error" + $(this).attr('id')).html().length > 0)
+                return false;
+        });
+
+        function validate(ids) {
+            var id, arr = ids.split(",");
+         
+            for (var i = 0; i < arr.length; i++) {
+                id = arr[i].trim();
+                if ($("#" + id).val().trim() == "") {
+                    if (id.match("^Option")) {
+                       
+                        var arr1 = id.split('_');
+                        $('#error' + id).show().html("Please enter option " + arr1[1].trim() + ".");
+                    }
+                    else
+                        $('#error' + id).show().html("Please enter survey " + id.toLowerCase() + ".");
+                }                   
+            }
+
+            return false;
+        }
+
+        $('#btnSubmitQuestion').unbind('click').click(function () {
+            buttonClicked = $(this).attr('id');
+            $("[id^=error]").hide().html("");
+            $('#lblError').hide().html("");
+
+            validate("Question, Option_1, Option_2, Option_3, Option_4");            
+
+            if ($("[id^=error]").html().length > 0)
+                return false;
+        });
+    });
+
+    function OnSuccess(response) {
+        if (!response) {
+            $('#lblError').show().html("Error occurred while adding survey question. Please try again later.");
+            return false;
+        }
+
+        $("#pollGrid").trigger("reloadGrid");
+        $('#modal-container').modal('hide');
+    }
+    function OnFailure(response) {
+        $('#lblError').show().html("Error occurred while adding survey question. Please try again later.");
+        return false;
+    }
+    function OnBegin() {
+        $("#loading").show();
+    }
+    function OnComplete() {
+        $("#loading").hide();
+    }
+</script>
+
+<div class="modal-body">
+    <div class="popup-body">
+        @using (Ajax.BeginForm("AddQuestion", "Manage", new AjaxOptions { OnBegin = "OnBegin", OnSuccess = "OnSuccess", OnFailure = "OnFailure", OnComplete = "OnComplete" }))
+        {
+            <div class="login-info" style="padding-top:1em">
+                <div class="popup-form">
+                    <h2>Add Survey Question</h2>
+                    <div style="padding-top: 10px; height: 40px;">
+                        <label id="lblError" class="error" style="display:none"></label>
+                    </div>
+                    <div style="height:63px">
+                        @Html.TextBox("Question", null, new { @class = "Question user", placeholder = "Question", maxlength = 2000 })
+                        <span id="errorQuestion" class="popup-validator" style="display:none"></span>
+                    </div>
+                    <div style="height:63px">
+                        @Html.TextBox("Option_1", null, new { @class = "Option_1 user", placeholder = "Option 1", maxlength = 2000 })
+                        <span id="errorOption_1" class="popup-validator" style="display:none"></span>
+                    </div>
+                    <div style="height:63px">
+                        @Html.TextBox("Option_2", null, new { @class = "Option_2 user", placeholder = "Option 2", maxlength = 2000 })
+                        <span id="errorOption_2" class="popup-validator" style="display:none"></span>
+                    </div>
+                    <div style="height:63px">
+                        @Html.TextBox("Option_3", null, new { @class = "Option_3 user", placeholder = "Option 3", maxlength = 2000 })
+                        <span id="errorOption_3" class="popup-validator" style="display:none"></span>
+                    </div>
+                    <div style="height:63px">
+                        @Html.TextBox("Option_4", null, new { @class = "Option_4 user", placeholder = "Option 4", maxlength = 2000 })
+                        <span id="errorOption_4" class="popup-validator" style="display:none"></span>
+                    </div>
+                    <div>
+                        <input type="hidden" id="PollId" name="PollId" value="@ViewBag.PollId" />
+                        <input type="submit" id="btnSubmitQuestion" name="Submit" value="Submit" />
+                        <input type="submit" id="btnCancel" name="Cancel" value="Cancel" data-dismiss="modal" />
+                    </div>
+                </div>                
+            </div>
+        }
+    </div>
+</div>

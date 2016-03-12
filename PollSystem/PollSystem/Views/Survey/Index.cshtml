@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<style>
+    
+.manage-survey table{
+        width: 100%;       
+    }
+    .main{
+        margin-top: 2em;
+    }
+    .manage-survey tr td{
+        float:left;
+        text-align:left;
+        margin-top: 1em;
+        width:100%;
+    }
+</style>
+<script type="text/javascript">
+
+    function CallChangefunc(pollid) {
+
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "/Survey/GetQuestion?pollid=" + pollid,
+            beforeSend: function () { $("#loading").show(); },
+            success: function (response) {
+
+                $("#survey").html(response);
+            },
+            complete: function () { $("#loading").hide(); }
+        })
+    }
+</script>
+<div class="login">
+    <div class="container" style="min-height: 300px;">
+        <div class="login-body" style="width:60%">
+            <h2 class="wow fadeInDown animated" data-wow-delay=".5s" style="text-align:center;font-size:2.5em">Survey</h2>
+            <div class="login-info wow fadeInUp animated" data-wow-delay=".5s" style="padding-top:0">
+                <div class="manage-survey-error">
+                    <label id="lblMainError" class="errorManageSurvey" style="display:none"></label>
+                </div>
+                <div style="text-align:center">
+                    Select the Survey:
+                    @Html.DropDownList("ddlPollList", new SelectList(ViewBag.PollList, "Value", "Text"), "- Select Survey -", new { @onchange = "CallChangefunc(this.value)" })
+                </div>
+
+                <div id="survey" class="manage-survey" style="width:100%">
+                    @Html.Partial("~/Views/Shared/_SurveyQuestion.cshtml")
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

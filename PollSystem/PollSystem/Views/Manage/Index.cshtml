@@ -1,0 +1,311 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<script type="text/javascript">
+    function EditPoll(id, title, description) {
+        $("#lblMainError").hide().html('');
+
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "/Manage/ShowEditPollPopup?pollid=" + id + "&title=" + title + "&description=" + description,
+            beforeSend: function () { $("#loading").show(); },
+            success: function (response) {                
+                $(".modal-content").html(response);
+                $('#modal-container').modal('show');
+            },
+            complete: function () { $("#loading").hide(); }
+        });
+    }
+
+    function DeletePoll(id) {
+        $("#lblMainError").hide().html('');
+
+        if (confirm("Are you sure you want to delete this survey?"))
+        {
+            $.ajax({
+                type: "GET",
+                async: false,
+                url: "/Manage/DeletePoll?pollid=" + id,
+                beforeSend: function () { $("#loading").show(); },
+                success: function (response) {
+                    if (!response)
+                        $("#lblMainError").show().html('Error occurred while deleting survey. Please try again later.');
+                    else
+                        $("#pollGrid").trigger("reloadGrid");
+                },
+                complete: function () { $("#loading").hide(); }
+            });
+        }       
+    }
+
+    function AddQuestion(id) {
+        $("#lblMainError").hide().html('');
+
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "/Manage/CheckQuestionLimit?pollid=" + id,
+            beforeSend: function () { $("#loading").show(); },
+            success: function (response) {
+             
+                if (response) {
+                    $("#lblMainError").show().html('You can not add more questions, because this survey achieved maximum question limit.');
+                }
+                else {
+                    $.ajax({
+                        type: "GET",
+                        async: false,
+                        url: "/Manage/ShowAddQuestionPopup?pollid=" + id,
+                        beforeSend: function () { $("#loading").show(); },
+                        success: function (response) {
+                            $(".modal-content").html(response);
+                            $('#modal-container').modal('show');
+                        },
+                        complete: function () { $("#loading").hide(); }
+                    });
+                }
+            },
+            complete: function () { $("#loading").hide(); }
+        });     
+    }
+
+    function EditQuestion(questionid, pollid, question) {
+        $("#lblMainError").hide().html('');
+
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "/Manage/ShowEditQuestionPopup?id=" + questionid + "&pollid=" + pollid + "&question=" + question,
+            beforeSend: function () { $("#loading").show(); },
+            success: function (response) {
+                $(".modal-content").html(response);
+                $('#modal-container').modal('show');
+            },
+            complete: function () { $("#loading").hide(); }
+        });
+    }
+
+    function DeleteQuestion(id) {
+        $("#lblMainError").hide().html('');
+
+        if (confirm("Are you sure you want to delete this question?")) {
+            $.ajax({
+                type: "GET",
+                async: false,
+                url: "/Manage/DeleteQuestion?questionid=" + id,
+                beforeSend: function () { $("#loading").show(); },
+                success: function (response) {
+                    if (!response)
+                        $("#lblMainError").show().html('Error occurred while deleting survey question. Please try again later.');
+                    else
+                        $("#pollGrid").trigger("reloadGrid");
+                },
+                complete: function () { $("#loading").hide(); }
+            });
+        }
+    }
+
+    function EditAnswer(answerid, questionid, answer) {
+        $("#lblMainError").hide().html('');
+
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "/Manage/ShowEditAnswerPopup?id=" + answerid + "&questionid=" + questionid + "&answer=" + answer,
+            beforeSend: function () { $("#loading").show(); },
+            success: function (response) {
+                $(".modal-content").html(response);
+                $('#modal-container').modal('show');
+            },
+            complete: function () { $("#loading").hide(); }
+        });
+    }
+
+    function DeleteAnswer(id) {
+        $("#lblMainError").hide().html('');
+
+        if (confirm("Are you sure you want to delete this answer?")) {
+            $.ajax({
+                type: "GET",
+                async: false,
+                url: "/Manage/DeleteAnswer?answerid=" + id,
+                beforeSend: function () { $("#loading").show(); },
+                success: function (response) {
+                    if (!response)
+                        $("#lblMainError").show().html('Error occurred while deleting answer. Please try again later.');
+                    else
+                        $("#pollGrid").trigger("reloadGrid");
+                },
+                complete: function () { $("#loading").hide(); }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        var pollActionFormatter = function (cellVal, options, rowObject) {
+            var html = "<div style=\"margin-left:8px;\">";
+            html+="<div onmouseout=\"jQuery(this).removeClass('ui-state-hover');\" onmouseover=\"jQuery(this).addClass('ui-state-hover');\" onclick=\"EditPoll('" + rowObject.Id + "', '" + rowObject.Title + "', '" + rowObject.Description + "');\" class=\"ui-pg-div ui-inline-edit\" style=\"float:left;cursor:pointer;\" title=\"Edit Survey\"><span class=\"ui-icon ui-icon-pencil\"></span></div>";
+            html += "<div onmouseout=\"jQuery(this).removeClass('ui-state-hover');\" onmouseover=\"jQuery(this).addClass('ui-state-hover');\" onclick=\"DeletePoll('" + rowObject.Id + "');\" class=\"ui-pg-div ui-inline-del\" style=\"float:left;margin-left:5px;\" title=\"Delete Survey\"><span class=\"ui-icon ui-icon-trash\"></span></div>";
+            html += "<div onmouseout=\"jQuery(this).removeClass('ui-state-hover');\" onmouseover=\"jQuery(this).addClass('ui-state-hover');\" onclick=\"AddQuestion('" + rowObject.Id + "');\" class=\"ui-pg-div ui-inline-del\" style=\"float:left;margin-left:5px;\" title=\"Add Question\"><span class=\"ui-icon ui-icon-circle-plus\"></span></div>";
+            html+="</div>";
+            return html;
+        };
+        $("#pollGrid").jqGrid({
+            url: '@Url.Action("GetPollGridData")',
+            datatype: 'json',
+            myType: 'GET',
+            colNames: ['Id', 'Title', 'Description', ''],
+            colModel: [
+                { name: 'Id', index: 'Id', key: true, hidden:true},
+                { name: 'Title', index: 'Title', editable: true },
+                { name: 'Description', index: 'Description', editable: true },
+                { formatter: pollActionFormatter, width: 73 }
+            ],
+            jsonReader: {
+                root: 'Data',
+                id: 'id',
+                repeatitems: false
+            },
+            emptyrecords: "No records to view",
+            sortname: "Title",
+            sortorder: "asc",
+            scroll: false,
+            height: 'auto',
+            pager: $('#pollPager'),
+            rowNum: 5,
+            rowList: [2, 5, 10],
+            width: 802,
+            viewrecords: true,
+            caption: 'Survey List',
+            subGrid: true, 
+            subGridRowExpanded: showQuestionGrid,
+            afterInsertRow: function (rowid, rowdata, rowelem) {           
+                var flag = false;
+                $.each(rowelem, function (key, value) {                   
+                    if (key == "PollQuestions" && value == "")
+                        flag = true;
+                });
+
+                if (flag) { 
+                    $("tr[id=" + rowid + "]>td:first").removeAttr("class");
+                    $("tr[id=" + rowid + "]>td:first").html("&nbsp;");
+                }               
+            }
+        });
+
+        //jQuery("#pollGrid").jqGrid('navGrid', '#pollPager', { del: true, add: true, edit: false });
+    });
+
+    var quesActionFormatter = function (cellVal, options, rowObject) {
+        var html = "<div style=\"margin-left:8px;\">";
+        html += "<div onmouseout=\"jQuery(this).removeClass('ui-state-hover');\" onmouseover=\"jQuery(this).addClass('ui-state-hover');\" onclick=\"EditQuestion('" + rowObject.Id + "', '" + rowObject.PollId + "', '" + rowObject.Question + "');\" class=\"ui-pg-div ui-inline-edit\" style=\"float:left;cursor:pointer;\" title=\"Edit Survey Question\"><span class=\"ui-icon ui-icon-pencil\"></span></div>";
+        html += "<div onmouseout=\"jQuery(this).removeClass('ui-state-hover');\" onmouseover=\"jQuery(this).addClass('ui-state-hover');\" onclick=\"DeleteQuestion('" + rowObject.Id + "');\" class=\"ui-pg-div ui-inline-del\" style=\"float:left;margin-left:5px;\" title=\"Delete Survey Question\"><span class=\"ui-icon ui-icon-trash\"></span></div>";       
+        html += "</div>";
+        return html;
+    };
+
+    function showQuestionGrid(parentRowID, parentRowKey) {
+        var childGridID = parentRowID + "_table";
+        var childGridPagerID = parentRowID + "_pager";
+
+        $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
+
+        $("#" + childGridID).jqGrid({
+            url: '/Manage/GetQuestionGridData?pollid=' + parentRowKey,
+            datatype: 'json',
+            myType: 'GET',
+            mtype: "GET",
+            page: 1,
+            colNames: ['Id', 'PollId', 'Question', ''],
+            datatype: "json",
+            colModel: [
+                { label: 'Id', name: 'Id', key: true, hidden: true },
+                { label: 'PollId', name: 'PollId', key: true, hidden: true },
+                { label: 'Question', name: 'Question', width:'598' },
+                { formatter: quesActionFormatter }
+            ],
+            jsonReader: {
+                root: 'Data',
+                id: 'id',
+                repeatitems: false
+            },
+            emptyrecords: "No records to view",
+            sortname: "Question",
+            sortorder: "asc",
+            autowidth: false,
+            shrinkToFit:true,
+            width: '100%',
+            height: '100%',
+            pager: "#" + childGridPagerID,
+            subGrid: true,
+            subGridRowExpanded: showAnswerGrid           
+        });
+    }
+
+    var ansActionFormatter = function (cellVal, options, rowObject) {
+        var html = "<div style=\"margin-left:8px;\">";
+        html += "<div onmouseout=\"jQuery(this).removeClass('ui-state-hover');\" onmouseover=\"jQuery(this).addClass('ui-state-hover');\" onclick=\"EditAnswer('" + rowObject.Id + "', '" + rowObject.QuestionId + "', '" + rowObject.AnswerText + "');\" class=\"ui-pg-div ui-inline-edit\" style=\"float:left;cursor:pointer;\" title=\"Edit Answer\"><span class=\"ui-icon ui-icon-pencil\"></span></div>";        
+        html += "</div>";
+        return html;
+    };
+
+    function showAnswerGrid(parentRowID, parentRowKey) {
+        var childGridID = parentRowID + "_table";
+        var childGridPagerID = parentRowID + "_pager";
+
+        $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
+
+        $("#" + childGridID).jqGrid({
+            url: '/Manage/GetAnswerGridData?questionid=' + parentRowKey,
+            datatype: 'json',
+            myType: 'GET',
+            mtype: "GET",
+            datatype: "json",
+            page: 1,
+            colNames: ['Id', 'QuestionId', 'Option', ''],
+            colModel: [
+                { label: 'Id', name: 'Id', key: true, hidden: true },
+                { label: 'QuestionId', name: 'QuestionId', hidden: true },
+                { label: 'AnswerText', name: 'AnswerText', width: '597' },
+                { formatter: ansActionFormatter }
+            ],
+            jsonReader: {
+                root: 'Data',
+                id: 'id',
+                repeatitems: false
+            },
+            emptyrecords: "No records to view",
+            sortname: "AnswerText",
+            sortorder: "asc",
+            width: '100%',
+            height: '100%',
+            pager: "#" + childGridPagerID
+        });
+    }
+</script>
+
+<div class="blog">
+    <div class="container">
+        <div class="blog-heading">
+            <h2 class="wow fadeInDown animated" data-wow-delay=".5s" style="font-size:2.5em">Manage Survey</h2>
+            <div class="blog-top-grids wow fadeInUp animated" data-wow-delay=".5s" style="margin-top:1em">
+                <div class="manage-survey">
+                    <div class="manage-survey-error">
+                        <label id="lblMainError" class="errorManageSurvey" style="display:none"></label>
+                    </div>
+                    <div class="add-survey-link">
+                        @Html.ActionLink("Add Survey", "ShowAddPollPopup", "Manage", null, new { id = "linkAddSurvey", @class = "modal-link", onclick = "$('#lblMainError').hide().html('');" })
+                    </div>
+                    <div style="float:right">                        
+                        <table id="pollGrid"></table>
+                        <div id="pollPager"></div>
+                    </div>
+                </div>             
+                
+            </div>
+        </div>
+    </div>    
+</div>

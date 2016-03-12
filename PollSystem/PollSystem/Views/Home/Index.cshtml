@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="popular">
+    <div class="container">
+        <div class="popular-heading information-heading">
+            <h3 class="wow fadeInDown animated" data-wow-delay=".5s">Online Survey System</h3>
+            <p class="wow fadeInUp animated" data-wow-delay=".5s" style="width:100%">
+                Online surveys are a great option for people and organisations who would like to conduct their own research – they are less time consuming, they are cheaper, you get the results faster, and you can transfer and use the data in various applications to answer important questions.
+            </p>
+        </div>
+        <div class="popular-slide">
+            <script src="~/Scripts/responsiveslides.min.js"></script>
+            <script>
+						// You can also use "$(window).load(function() {"
+						$(function () {
+						// Slideshow 4
+							$("#slider1").responsiveSlides({
+								auto: true,
+								pager: true,
+								nav: false,
+								speed: 500,
+								namespace: "callbacks",
+								before: function () {
+									$('.events').append("<li>before event fired.</li>");
+								},
+								after: function () {
+									$('.events').append("<li>after event fired.</li>");
+								}
+							 });
+						});
+            </script>
+            <div id="top" class="callbacks_container-wrap">
+                <ul class="rslides" id="slider1">
+                    <li>
+                        <div class="popular-slide-info wow bounceIn animated" data-wow-delay=".5s"></div>
+                    </li>
+                    <li>
+                        <div class="popular-slide-info popular-slide1"></div>
+                    </li>
+                    <li>
+                        <div class="popular-slide-info popular-slide2"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+</div>
+

@@ -1,0 +1,164 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+}
+<script type="text/javascript">
+
+    $(function() {
+
+        var buttonClicked;
+
+        function isValidEmailAddress(emailAddress) {
+            var pattern = /^\b[A-Z0-9._%-]+@@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i;
+            return pattern.test(emailAddress);
+        }
+
+        $("[id^=error]").click(function() {
+            $(this).hide().html("");
+            var id = $(this).attr('id').replace("error", "");
+            $("." + id).focus();
+        });
+
+        $("input[type=text], input[type=password]").blur(function () {
+            if (buttonClicked != undefined) 
+                validate($(this).attr('id'));
+
+            if ($("#error" + $(this).attr('id')).html().length > 0)
+                    return false;                        
+        });
+
+        function validate(ids) {
+            var id;
+            var arr = ids.split(",");
+
+            for (var i = 0; i < arr.length; i++) {
+                id = arr[i].trim();
+                if ($("#" + id).val().trim() == "")
+                    $('#error' + id).show().html("Please enter " + ((id == "EmailId") ? "email address" : id.toLowerCase()) + ".");
+                else if (id == "EmailId") {
+                    if (!isValidEmailAddress($("#EmailId").val().trim()))
+                        $('#error' + id).show().html("Please enter valid email address.");
+                    else {
+                        $.ajax({
+                            type: "POST",
+                            async: false,
+                            url: "/Account/CheckEmailId",
+                            data: "{emailid: '" + $("#EmailId").val().trim() + "'}",
+                            contentType: "application/json",
+                            dataType: "json",
+                            beforeSend: function () { $("#loading").show(); },
+                            success: function (response) {
+                                if (!response)
+                                    $('#error' + id).show().html("Entered email address is not registered.");
+                            },
+                            complete: function () { $("#loading").hide(); }
+                        });
+                    }
+                }
+            }                        
+        }
+
+        $('#btnLogin').unbind('click').click(function() {
+            buttonClicked = $(this).attr('id');
+            $("[id^=error]").hide().html("");
+            $('#lblError').hide().html("");
+                        
+            validate("EmailId, Password");
+
+            if ($("[id^=error]").html().length > 0)
+                return false;
+            else {
+                if ($('#chkRememberMe').is(":checked")) {
+                    $('#hdnRemeberme').val(true);
+                }
+
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: "/Account/SubmitLogin",
+                    data: "{emailid: '" + $('#EmailId').val() + "', password:'" + $('#Password').val() + "', rememberme:'" + $('#hdnRemeberme').val() + "'}",
+                    contentType: "application/json",
+                    dataType: "json",
+                    beforeSend: function() { $("#loading").show(); },
+                    success: function(response) {
+                        if (response == "fail") {
+                            $('#lblError').show().html("Email address and password do not match.");
+                            return false;
+                        }
+
+                        window.location =response;                                        
+                    },
+                    complete: function() { $("#loading").hide(); }
+                });
+                if ($('#lblError').html().length > 0)
+                    return false;
+            }
+        });
+
+        $('#chkRememberMe').change(function () {
+            
+            $('#hdnRemeberme').val(false);
+
+            if ($(this).is(":checked")) {
+                $('#hdnRemeberme').val(true);
+            }
+        });
+    });
+</script>
+
+<div class="login">
+    <div class="container">
+        <div class="login-body">
+          
+            <h2 class="wow fadeInDown animated" data-wow-delay=".5s" style="text-align:center;font-size:2.5em">Login</h2>
+            <div class="login-info wow fadeInUp animated" data-wow-delay=".5s" style="padding-top:2em">
+                <input type="hidden" id="hdnRemeberme" value="@ViewData[Constants.RememberMe]" />
+                <div>
+                    <div>
+                        <div style="height:30px">
+                            <label id="lblError" class="error" style="display:none"></label>
+                            </div>
+                            <div style="height:63px">
+                                @Html.TextBox("EmailId", ViewData[Constants.EmailId], new { @class = "EmailId user", placeholder = "Email Address", maxlength = 200 })
+                                <span id="errorEmailId" class="Validators" style="display:none"></span>
+                            </div>
+                            <div style="height:63px">
+                                @Html.TextBox("Password", ViewData[Constants.Password], new { type = "password", @class = "Password lock", placeholder = "Password", maxlength = 50 })
+                                <span id="errorPassword" class="Validators" style="display:none"></span>
+                            </div>
+                        </div>
+                </div>
+                        <div class="forgot-top-grids">
+                            <div class="forgot-grid">
+                                <ul>
+                                    <li>
+                                        @{
+                                            string check = "";
+                                            if (ViewData[Constants.RememberMe] != null)
+                                            {
+                                                check = "checked";
+                                            }
+                                        }
+                                      
+                                        <input type="checkbox" id="chkRememberMe" value="" @check />
+                                       
+                                        <label for="chkRememberMe"><span></span>Remember me</label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="forgot">
+                                @Html.ActionLink("Forgot password?", "ForgotPassword", "Account", null, new { id="linkForgotPassword", @class = "modal-link" })
+
+                            </div>
+                            <div class="clearfix"> </div>
+                        </div>
+                        <input type="submit" id="btnLogin" name="Sign In" value="Login">
+                        <div class="signup-text">
+                            @Html.ActionLink("Don't have an account? Create one now", "Signup", "Account")
+
+                        </div>
+                </div>
+            </div> 
+    </div>
+</div>
+

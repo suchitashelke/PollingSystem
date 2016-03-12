@@ -1,0 +1,139 @@
+﻿
+@{
+    ViewBag.Title = "Sign up";
+}
+<script type="text/javascript">
+
+    $(function() {
+
+        var buttonClicked;
+
+        function isValidEmailAddress(emailAddress) {
+            var pattern = /^\b[A-Z0-9._%-]+@@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i;
+            return pattern.test(emailAddress);
+        }
+
+        $("[id^=error]").click(function() {
+            $(this).hide().html("");
+            var id = $(this).attr('id').replace("error", "");
+            $("." + id).focus();
+        });
+
+        $("input[type=text], input[type=password]").blur(function () {
+            if (buttonClicked != undefined)
+                validate($(this).attr('id'));
+
+            if ($("#error" + $(this).attr('id')).html().length > 0)
+                    return false;
+        });
+
+        function validate(ids) {
+            var errormsg = "", id;
+
+            var arr = ids.split(",");
+
+            for (var i = 0; i < arr.length; i++) {
+                id = arr[i].trim();
+                if ($("#" + id).val().trim() == "")
+                    $('#error' + id).show().html("Please enter " + ((id == "EmailId") ? "email address" : (id == "ConfirmPassword") ? "confirm password" : id.toLowerCase()) + ".");
+                else
+                {
+                    if (id == "EmailId") {
+                        if (!isValidEmailAddress($("#"+ id).val().trim()))
+                            $('#error' + id).show().html("Please enter valid email address.");
+                        else {
+                            $.ajax({
+                                type: "POST",
+                                async: false,
+                                url: "/Account/CheckEmailId",
+                                data: "{emailid: '" + $("#EmailId").val().trim() + "'}",
+                                contentType: "application/json",
+                                dataType: "json",
+                                beforeSend: function () { $("#loading").show(); },
+                                success: function (response) {
+                                    if (response)
+                                        $('#error' + id).show().html("Email address is already exists.");
+                                },
+                                complete: function () { $("#loading").hide(); }
+                            });
+                        }                       
+                    }
+         
+                    if (id == "Password" && $("#" + id).val().trim().length < 6)
+                        $('#error' + id).show().html("Minimum password length: 6.");
+
+                    if (id == "ConfirmPassword" && $('#Password').val() != $("#" + id).val())
+                        $('#error' + id).show().html("Password does not match.");
+                }
+            }
+        }
+
+        $('#btnSignup').unbind('click').click(function () {
+            buttonClicked = $(this).attr('id');
+            $("[id^=error]").hide().html("");
+            $('#lblError').hide().html("");
+
+            validate("Name, EmailId, Password, ConfirmPassword");
+
+            if ($("[id^=error]").html().length > 0)
+                return false;
+        });
+    });
+
+    function OnSuccess(response) {
+        if (!response) {
+            $('#lblError').show().html("Error occurred while registration. Please try again later.");
+            return false;
+        }
+        window.location = "/Manage/Index";
+    }
+    function OnFailure(response) {
+        $('#lblError').show().html("Error occurred while registration. Please try again later.");
+        return false;
+    }
+    function OnBegin() {
+        $("#loading").show();
+    }
+    function OnComplete() {
+        $("#loading").hide();
+    }
+</script>
+<div class="login">
+    <div class="container">
+        <div class="login-body">
+            <h2 class="wow fadeInDown animated" data-wow-delay=".5s" style="text-align:center;font-size:2.5em">Sign up</h2>
+            <div class="login-info wow fadeInUp animated" data-wow-delay=".5s" style="padding-top:2em">
+                @using (Ajax.BeginForm("submitRegistration", "Account", new AjaxOptions { OnBegin = "OnBegin", OnSuccess = "OnSuccess", OnFailure = "OnFailure", OnComplete = "OnComplete" }))
+                {
+                    <div>
+                        <div style="height:30px">
+                            <label id="lblError" class="error" style="display:none"></label>
+                        </div>
+                        <div style="height:63px">
+                            @Html.TextBox("Name", null, new { @class = "Name user", placeholder = "Name", maxlength = 100 })
+                            <span id="errorName" class="Validators" style="display:none"></span>
+                        </div>
+                        <div style="height:63px">
+                            @Html.TextBox("EmailId", null, new { @class = "EmailId user", placeholder = "Email Address", maxlength = 200 })
+                            <span id="errorEmailId" class="Validators" style="display:none"></span>
+                        </div>
+                        <div style="height:63px">
+                            @Html.TextBox("Password", null, new { type = "password", @class = "Password lock", placeholder = "Password", maxlength = 50 })
+                            <span id="errorPassword" class="Validators" style="display:none"></span>
+                        </div>
+                        <div style="height:63px">
+                            @Html.TextBox("ConfirmPassword", null, new { type = "password", @class = "ConfirmPassword lock", placeholder = "Confirm Password", maxlength = 50 })
+                            <span id="errorConfirmPassword" class="Validators" style="display:none"></span>
+                        </div>
+                    </div>
+                    <input type="submit" id="btnSignup" name="Sign In" value="Sign up">
+                    <div class="signup-text">
+                        <a href="/Account/Login">Already have an account? Login here.</a>
+                    </div>
+                }
+            </div>
+
+            </div>
+    </div>
+</div>
+

@@ -1,0 +1,126 @@
+﻿@using System.Web.Optimization;
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Survey System :: Free Online Survey</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="survey, poll, online survey, polling system, survey system" />
+    @Styles.Render("~/Content/css")
+    <link href='//fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+    @Scripts.Render("~/bundles/jquery")
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>  
+    <script type="text/javascript">
+      
+        var sessionTimeoutWarning = @Session.Timeout -1;
+        var sTimeout = parseInt(sessionTimeoutWarning) * 60 * 1000;
+        setTimeout('SessionEnd()', sTimeout);
+        
+        function SessionEnd() {
+            window.location = "/Account/LogOut";
+        }
+</script>
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            $(".scroll").click(function (event) {
+                event.preventDefault();
+                $('html,body').animate({ scrollTop: $(this.hash).offset().top }, 1000);
+            });           
+        });        
+
+        new WOW().init(); //animate
+
+    $(function () {
+
+        $('body').on('click', '.modal-link', function (e) {
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+        $('body').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+    });
+    </script>
+
+</head>
+<body>
+    <div class="header">
+        <div class="top-header">
+            <div class="container">
+                <div class="top-header-info">
+                    <div class="top-header-left wow fadeInLeft animated" data-wow-delay=".5s">
+                        <p>Discover the power of your opinion</p>
+                    </div> 
+                    <div class="top-header-right wow fadeInRight animated" data-wow-delay=".5s" style="width:45%;float: right;">
+                        <div class="top-header-right-info" style="float: right;width:100%">
+                            <ul style="float: right;">
+                                @if (Session[Constants.LoginUser] != null)
+                                {
+                                    <li style="text-align: right;"><label class="welcome-text">Welcome @Session[Constants.Name]</label></li>
+                                    <li>@Html.ActionLink("Log out", "LogOut", "Account", null, new { @class = "" + @Html.IsActive("Account", "LogOut") + "" })</li>
+                                }
+                                else
+                                {
+                                    <li>@Html.ActionLink("Login", "Login", "Account", null, new { @class = "" + @Html.IsActive("Account", "Login") + "" })</li>
+                                    <li>@Html.ActionLink("Signup", "Signup", "Account", null, new { @class = "" + @Html.IsActive("Account", "Signup") + "" })</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix"> </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-header" style="background-color:#eaeaea">
+            <div class="container">
+                <div class="logo wow fadeInDown animated" data-wow-delay=".5s">
+                    <h1><a href="/Home/Index"><img src="~/Images/logo1.png" /></a></h1>
+                </div>
+                <div class="top-nav wow fadeInRight animated" data-wow-delay=".5s" style="background-color:#eaeaea">
+                    <nav class="navbar navbar-default">
+                        <div class="container">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                                Menu
+                            </button>
+                        </div>
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav">
+                                <li>@Html.ActionLink("Home", "Index", "Home", null, new { @class = "" + @Html.IsActive("Home", "Index") + "" })</li>
+                                <li>@Html.ActionLink("About", "About", "Home", null, new { @class = "" + @Html.IsActive("Home", "About") + "" })</li>
+                                <li>@Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "" + @Html.IsActive("Home", "Contact") + "" })</li>
+                            </ul>
+                            <div class="clearfix"> </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        @RenderBody()
+    </div>
+    <div class="footer" style="background-color:#eaeaea">
+        <div class="container">
+            <div class="copyright wow fadeInUp animated" data-wow-delay=".5s">
+                <p>© 2016 Survey System. All Rights Reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+    <div id="loading" style="display:none;"></div>
+</body>
+</html>

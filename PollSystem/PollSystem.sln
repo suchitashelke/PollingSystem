@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PollSystem", "PollSystem\PollSystem.csproj", "{CD16DB8B-0EF8-41BB-86DE-E2C7248A50BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{DF3EB061-4944-487D-A14B-ABD4F8D67740}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{B7E3BBD4-8F70-45D5-B128-6A089DF93985}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD16DB8B-0EF8-41BB-86DE-E2C7248A50BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD16DB8B-0EF8-41BB-86DE-E2C7248A50BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD16DB8B-0EF8-41BB-86DE-E2C7248A50BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD16DB8B-0EF8-41BB-86DE-E2C7248A50BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF3EB061-4944-487D-A14B-ABD4F8D67740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF3EB061-4944-487D-A14B-ABD4F8D67740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF3EB061-4944-487D-A14B-ABD4F8D67740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF3EB061-4944-487D-A14B-ABD4F8D67740}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7E3BBD4-8F70-45D5-B128-6A089DF93985}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7E3BBD4-8F70-45D5-B128-6A089DF93985}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7E3BBD4-8F70-45D5-B128-6A089DF93985}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7E3BBD4-8F70-45D5-B128-6A089DF93985}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

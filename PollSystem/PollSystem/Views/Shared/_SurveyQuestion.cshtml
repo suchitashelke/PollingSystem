@@ -1,0 +1,56 @@
+﻿
+<script type="text/javascript">
+
+        function OnSuccess(response) {
+            if (!response) {
+                $('#lblMainError').show().html("Error occurred while submitting survey. Please try again later.");
+                return false;
+            }
+            
+            window.location = "/Survey/Index";
+        }
+        function OnFailure(response) {
+            $('#lblMainError').show().html("Error occurred while submitting survey. Please try again later.");
+            return false;
+        }
+        function OnBegin() {
+            $("#loading").show();
+        }
+        function OnComplete() {
+            $("#loading").hide();
+        }
+</script>
+
+@using (Ajax.BeginForm("submitSurvey", "Survey", new AjaxOptions { OnBegin = "OnBegin", OnSuccess = "OnSuccess", OnFailure = "OnFailure", OnComplete = "OnComplete" }))
+{
+<table class="main">
+    @{ var serialnum = 0;
+   if (ViewBag.listPollQuestion != null)
+   {
+       var listQuestion = (List<DAL.PollQuestion>)ViewBag.listPollQuestion;       
+       foreach (var question in listQuestion.Select((value, i) => new { i, value }))
+       {
+        <tr style="padding-top:10px;caption-side">
+
+            <td>@{serialnum = serialnum + 1;}
+               @serialnum . @Html.LabelFor(q => question.value.Question, question.value.Question, new { @id = "Question" + question.i })
+                <table>                                        
+                        @foreach (var answer in question.value.PollQuesAnswers.Select((value, j) => new { j, value }))
+                        {
+                            <tr>
+                                <td>@Html.RadioButton("AnsFor"+question.value.Id, answer.value.Id, new { @id = "Answer" + answer.j }) @answer.value.AnswerText </td>
+                            </tr>
+                        }
+                  
+                </table>
+            </td>
+            
+        </tr>
+       }
+       <tr><td><input type="hidden" id="PollId" name="PollId" value="@listQuestion.FirstOrDefault().PollId" />
+           <input type="submit" id="btnSubmit" name="Submit Survey" value="Submit Survey"></td></tr>
+   }
+    }
+
+</table>
+}
